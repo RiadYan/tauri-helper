@@ -52,6 +52,6 @@ pub fn get_workspace() -> CargoToml {
 
 pub fn get_workspace_pkg_name() -> String {
     let cont = get_workspace();
-
+    println!("cargo toml: {:#?}", &cont);
     cont.package.name
 }
