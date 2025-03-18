@@ -5,12 +5,7 @@ edition = "2024"
 license = "MIT"
 readme = "README.md"
 keywords = ["tauri", "macros", "commands", "development-tools"]
-categories = [
-    "development-tools",
-    "development-tools:build-utils",
-    "gui",
-    "api-bindings",
-]
+categories = ["development-tools", "gui", "api-bindings"]
 
 [dependencies]
 walkdir = { workspace = true }
