@@ -102,16 +102,16 @@ pub use tauri_helper_macros::*;
 /// build process with a non-zero status code.
 pub fn generate_command_file(options: TauriHelperOptions) {
     let workspace_root = find_workspace_dir(Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()));
-    eprintln!("Workspace Root Dir: {}", &workspace_root.display());
+    build_print::println!("Workspace Root Dir: {}", &workspace_root.display());
     //todo: make commands_dir in TauriHelperOptions.
 
     let commands_dir = workspace_root.join("target").join("tauri_commands_list");
-    eprintln!("commands_dir Dir: {}", &commands_dir.display());
+    build_print::println!("commands_dir Dir: {}", &commands_dir.display());
 
     fs::create_dir_all(&commands_dir).unwrap();
 
     let workspace_members = get_workspace_members(&workspace_root);
-    eprintln!("workspace members: {:#?}", &workspace_members);
+    build_print::println!("workspace members: {:#?}", &workspace_members);
 
     for member in &workspace_members {
         println!("cargo:rerun-if-changed={}", member);
