@@ -1,0 +1,34 @@
+[package]
+name = "tauri-helper"
+version = "0.1.1"
+edition = "2024"
+license = "MIT"
+readme = "README.md"
+keywords = ["tauri", "macros", "commands", "development-tools"]
+categories = [
+    "development-tools",
+    "development-tools:build-utils",
+    "gui",
+    "api-bindings",
+]
+
+[dependencies]
+walkdir = { workspace = true }
+syn = { workspace = true }
+toml = { workspace = true }
+serde = { workspace = true }
+tauri_helper_core = { path = "./local-crates/tauri_helper_core" }
+tauri_helper_macros = { path = "./local-crates/tauri_helper_macros", default-features = false }
+
+[features]
+default = []
+tracing = ["tauri_helper_macros/tracing"]
+
+[workspace]
+members = ["local-crates/tauri_helper_core", "local-crates/tauri_helper_macros"]
+
+[workspace.dependencies]
+walkdir = "2.5.0"
+syn = { version = "2.0.100", features = ["full"] }
+toml = "0.8.20"
+serde = { version = "1.0.219", features = ["derive"] }
