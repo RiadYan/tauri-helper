@@ -1,5 +1,11 @@
 # `tauri_helper`
 
+![Crates.io License](https://img.shields.io/crates/l/tauri_helper)
+[![Crates.io](https://img.shields.io/crates/v/tauri_helper)](https://crates.io/crates/tauri_helper)
+[![Docs.rs](https://docs.rs/tauri-helper/badge.svg)](https://docs.rs/tauri_helper)
+![Crates.io Size](https://img.shields.io/crates/size/tauri_helper)
+
+
 `tauri_helper` is a collection of tools and utilities designed to simplify the development of Tauri applications. It provides macros, utilities, and automation to streamline common tasks such as command collection, error handling, and workspace management.
 
 This workspace includes the following crates:
