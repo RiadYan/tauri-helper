@@ -211,7 +211,7 @@ fn collect_commands(calling_crate: String) -> HashSet<String> {
     commands
 }
 
-/// Generates the Specta collect_commands![] macro invocation
+/// Generates the Specta collect_commands![] macro invocation with a list of all collected commands.
 #[proc_macro]
 pub fn specta_collect_commands(_item: TokenStream) -> TokenStream {
     let calling_crate = get_workspace_pkg_name();
@@ -235,7 +235,7 @@ pub fn specta_collect_commands(_item: TokenStream) -> TokenStream {
     .into()
 }
 
-/// Generates the Tauri generate_handler![] macro invocation
+/// Generates the Tauri generate_handler![] macro invocation with a list of all collected commands.
 #[proc_macro]
 pub fn tauri_collect_commands(_item: TokenStream) -> TokenStream {
     let calling_crate = get_workspace_pkg_name();

@@ -39,6 +39,13 @@ If you want to use the `WithLogging` macro with `tracing`, enable the `tracing` 
 tauri_helper = { version = "0.1.1", features = ["tracing"] }
 ```
 
+Then add it to the `[build-dependencies]` :
+
+```toml
+[build-dependencies]
+tauri_helper = "0.1.1"
+```
+
 ## IMPORTANT
 
 Before using any command collection, you have to add this to the `build.rs` file.
@@ -139,7 +146,8 @@ fn main() {
 ## Notes
 
 - **`WithLogging` Stability**: The `WithLogging` macro is experimental and may undergo breaking changes. It is not recommended for production use.
-- **Command Collection**: Ensure that all Tauri commands are annotated with `#[auto_collect_command]` to be included in the generated handlers.
+- **Command Collection**: Ensure that all Tauri commands are annotated with `#[auto_collect_command]` to be included in the generated handlers by default.
+- **Collection Conflict**: Ensure that you are only using an `#[command]` that comes from tauri.
 
 ---
 

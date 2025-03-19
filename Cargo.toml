@@ -4,6 +4,8 @@ version = "0.1.1"
 edition = "2024"
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/RiadYan/tauri-helper"
+homepage = "https://github.com/RiadYan/tauri-helper"
 keywords = ["tauri", "macros", "commands", "development-tools"]
 categories = ["development-tools", "gui", "api-bindings"]
 
@@ -15,6 +17,7 @@ serde = { workspace = true }
 tauri_helper_core = { path = "./local-crates/tauri_helper_core" }
 tauri_helper_macros = { path = "./local-crates/tauri_helper_macros", default-features = false }
 build-print = "0.1.1"
+
 [features]
 default = []
 tracing = ["tauri_helper_macros/tracing"]
