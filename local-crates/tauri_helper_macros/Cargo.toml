@@ -1,6 +1,7 @@
 [package]
 name = "tauri_helper_macros"
 version = "0.1.0"
+authors = ["RiadYan"]
 edition = "2024"
 
 [lib]
