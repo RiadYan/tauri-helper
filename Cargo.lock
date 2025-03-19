@@ -149,7 +149,7 @@ version = "0.1.1"
 dependencies = [
  "serde",
  "syn 2.0.100",
- "tauri_helper_core",
+ "tauri_helper_core 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tauri_helper_macros",
  "toml",
  "walkdir",
@@ -164,6 +164,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri_helper_core"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b7033e664897d6986e177e4b77b2f49bea3df7d08608f0010278a68cf3fd753"
+dependencies = [
+ "serde",
+ "toml",
+]
+
+[[package]]
 name = "tauri_helper_macros"
 version = "0.1.0"
 dependencies = [
@@ -172,7 +182,7 @@ dependencies = [
  "quote",
  "serde",
  "syn 2.0.100",
- "tauri_helper_core",
+ "tauri_helper_core 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror",
  "toml",
  "tracing",

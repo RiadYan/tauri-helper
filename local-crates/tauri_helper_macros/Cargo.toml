@@ -20,7 +20,7 @@ walkdir = "2.5.0"
 syn = { version = "2.0.100", features = ["full"] }
 toml = "0.8.20"
 serde = { version = "1.0.219", features = ["derive"] }
-tauri_helper_core = { path = "../tauri_helper_core" }
+tauri_helper_core = "0.1.0"
 
 
 [dependencies.quote]
