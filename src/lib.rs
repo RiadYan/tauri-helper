@@ -102,7 +102,7 @@ pub use tauri_helper_macros::*;
 /// build process with a non-zero status code.
 pub fn generate_command_file() {
     let workspace_root = find_workspace_dir(Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()));
-    let commands_dir = workspace_root.join("target").join("commands");
+    let commands_dir = workspace_root.join("target").join("tauri_commands_list");
     fs::create_dir_all(&commands_dir).unwrap();
 
     // Read the workspace members from `Cargo.toml`
