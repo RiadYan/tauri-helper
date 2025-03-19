@@ -105,6 +105,29 @@ This will tell the build script to get every tauri_command available in every me
 
 This is not recommended as it can lead to adding functions that are not meant to be exported.
 
+---
+
+If your workspace contains multiple crates, you must export all functions in the root file (`lib.rs`) of each crate.
+
+### Example
+
+In `my_commands.rs`:
+```rust
+#[tauri::command]
+#[auto_collect_command]
+fn greet(name: String) -> String {
+    format!("Hello, {}!", name)
+}
+```
+
+In `lib.rs`:
+```rust
+pub mod my_commands;
+pub use my_commands::*;
+```
+
+> **Note:** This is required because the feature that enables full module path retrieval is still only available in the nightly version of Rust.
+
 ## Example
 
 Here’s a complete example of using `tauri_helper` in a Tauri application:
