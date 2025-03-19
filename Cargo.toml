@@ -15,8 +15,8 @@ walkdir = { workspace = true }
 syn = { workspace = true }
 toml = { workspace = true }
 serde = { workspace = true }
-tauri_helper_core = { path = "./local-crates/tauri_helper_core" }
-tauri_helper_macros = { path = "./local-crates/tauri_helper_macros", default-features = false }
+tauri_helper_core = { path = "./local-crates/tauri_helper_core", version = "0.1.0" }
+tauri_helper_macros = { path = "./local-crates/tauri_helper_macros", default-features = false, version = "0.1.0" }
 
 [features]
 default = []
