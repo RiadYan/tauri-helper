@@ -100,7 +100,7 @@ pub use tauri_helper_macros::*;
 ///
 /// If the function encounters an error during file generation, it will log the error and exit the
 /// build process with a non-zero status code.
-pub fn generate_command_file() {
+pub fn generate_command_file(options: TauriHelperOptions) {
     let workspace_root = find_workspace_dir(Path::new(&env::var("CARGO_MANIFEST_DIR").unwrap()));
     let commands_dir = workspace_root.join("target").join("tauri_commands_list");
     fs::create_dir_all(&commands_dir).unwrap();
@@ -128,10 +128,23 @@ pub fn generate_command_file() {
                 if let Ok(content) = fs::read_to_string(path) {
                     if let Ok(ast) = parse_file(&content) {
                         for item in ast.items {
-                            if let syn::Item::Fn(func) = item {
+                            if !options.collect_all {
+                                if let syn::Item::Fn(func) = item {
+                                    for attr in &func.attrs {
+                                        if attr.path().is_ident("auto_collect_command") {
+                                            functions.push(func.sig.ident.to_string());
+                                        }
+                                    }
+                                }
+                            } else if let syn::Item::Fn(func) = item {
                                 for attr in &func.attrs {
-                                    if attr.path().is_ident("auto_collect_command") {
-                                        functions.push(func.sig.ident.to_string());
+                                    if let syn::Meta::Path(path) = &attr.meta {
+                                        if path.segments.len() == 2
+                                            && path.segments[0].ident == "tauri"
+                                            && path.segments[1].ident == "command"
+                                        {
+                                            functions.push(func.sig.ident.to_string());
+                                        }
                                     }
                                 }
                             }
@@ -141,7 +154,7 @@ pub fn generate_command_file() {
             }
         }
         let package_name = get_workspace().package.name.replace("-", "_");
-        // Write to the crate's command file
+
         let command_file = commands_dir.join(format!("{}.txt", crate_name));
         let mut file = File::create(&command_file).unwrap();
 
