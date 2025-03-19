@@ -12,10 +12,10 @@ categories = ["development-tools", "gui", "api-bindings"]
 description = "A collection of tools and utilities designed to simplify the development of Tauri applications."
 
 [dependencies]
-walkdir = { workspace = true }
-syn = { workspace = true }
-toml = { workspace = true }
-serde = { workspace = true }
+walkdir = "2.5.0"
+syn = { version = "2.0.100", features = ["full"] }
+toml = "0.8.20"
+serde = { version = "1.0.219", features = ["derive"] }
 tauri_helper_core = { path = "./local-crates/tauri_helper_core", version = "0.1.0" }
 tauri_helper_macros = { path = "./local-crates/tauri_helper_macros", default-features = false, version = "0.1.0" }
 
@@ -25,9 +25,3 @@ tracing = ["tauri_helper_macros/tracing"]
 
 [workspace]
 members = ["local-crates/tauri_helper_core", "local-crates/tauri_helper_macros"]
-
-[workspace.dependencies]
-walkdir = "2.5.0"
-syn = { version = "2.0.100", features = ["full"] }
-toml = "0.8.20"
-serde = { version = "1.0.219", features = ["derive"] }

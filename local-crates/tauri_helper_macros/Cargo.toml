@@ -3,6 +3,12 @@ name = "tauri_helper_macros"
 version = "0.1.0"
 authors = ["RiadYan"]
 edition = "2024"
+license = "MIT"
+repository = "https://github.com/RiadYan/tauri-helper"
+homepage = "https://github.com/RiadYan/tauri-helper"
+keywords = ["tauri", "macros", "commands", "development-tools"]
+categories = ["development-tools", "gui", "api-bindings"]
+description = "The list of macros of the tauri_helper crate"
 
 [lib]
 proc-macro = true
@@ -10,10 +16,10 @@ proc-macro = true
 [dependencies]
 tracing = { version = "0.1.41", optional = true }
 thiserror = "2.0.12"
-walkdir = { workspace = true }
-syn = { workspace = true }
-toml = { workspace = true }
-serde = { workspace = true }
+walkdir = "2.5.0"
+syn = { version = "2.0.100", features = ["full"] }
+toml = "0.8.20"
+serde = { version = "1.0.219", features = ["derive"] }
 tauri_helper_core = { path = "../tauri_helper_core" }
 
 
