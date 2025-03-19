@@ -9,6 +9,7 @@ repository = "https://github.com/RiadYan/tauri-helper"
 homepage = "https://github.com/RiadYan/tauri-helper"
 keywords = ["tauri", "macros", "commands", "development-tools"]
 categories = ["development-tools", "gui", "api-bindings"]
+description = "A collection of tools and utilities designed to simplify the development of Tauri applications."
 
 [dependencies]
 walkdir = { workspace = true }
