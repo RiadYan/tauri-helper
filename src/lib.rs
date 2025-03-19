@@ -138,13 +138,14 @@ pub fn generate_command_file(options: TauriHelperOptions) {
                                 }
                             } else if let syn::Item::Fn(func) = item {
                                 for attr in &func.attrs {
-                                    if let syn::Meta::Path(path) = &attr.meta {
-                                        if path.segments.len() == 2
+                                    let path = &attr.path();
+                                    //find a way to make sure it comes from tauri::command
+                                    if path.is_ident("command")
+                                        || (path.segments.len() == 2
                                             && path.segments[0].ident == "tauri"
-                                            && path.segments[1].ident == "command"
-                                        {
-                                            functions.push(func.sig.ident.to_string());
-                                        }
+                                            && path.segments[1].ident == "command")
+                                    {
+                                        functions.push(func.sig.ident.to_string());
                                     }
                                 }
                             }
