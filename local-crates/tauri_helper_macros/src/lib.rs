@@ -1,4 +1,5 @@
 use proc_macro::TokenStream;
+use proc_macro_error::proc_macro_error;
 use quote::quote;
 use std::path::Path;
 use std::{

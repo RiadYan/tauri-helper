@@ -1,6 +1,6 @@
 [package]
 name = "tauri_helper_macros"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["RiadYan"]
 edition = "2024"
 license = "MIT"
