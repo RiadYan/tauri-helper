@@ -283,7 +283,6 @@ pub fn array_collect_commands(item: TokenStream) -> TokenStream {
         quote! {
             {
                 let arr = [ #collected_str ];
-                println!("List of gotten functions: {:?}", arr);
                 arr
             }
         }

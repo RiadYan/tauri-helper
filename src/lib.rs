@@ -162,11 +162,9 @@ pub fn generate_command_file(options: TauriHelperOptions) {
         for func in functions {
             if crate_name.replace("-", "_") == "src_tauri" {
                 let full_name = format!("{}::{}", package_name, func);
-                println!("found: {:#?}", &full_name);
                 writeln!(file, "{}", full_name).unwrap();
             } else {
                 let full_name = format!("{}::{}", crate_name.replace("-", "_"), func);
-                println!("found: {:#?}", &full_name);
                 writeln!(file, "{}", full_name).unwrap();
             }
         }
