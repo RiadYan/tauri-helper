@@ -150,7 +150,7 @@ dependencies = [
  "serde",
  "syn 2.0.100",
  "tauri_helper_core 0.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "tauri_helper_macros 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tauri_helper_macros 0.1.1",
  "toml",
  "walkdir",
 ]
@@ -176,6 +176,8 @@ dependencies = [
 [[package]]
 name = "tauri_helper_macros"
 version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2226ac02ed13d17106a33a5b8b6c4cf9855b8a00cdd74e7669cab51057b56fd3"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -191,9 +193,7 @@ dependencies = [
 
 [[package]]
 name = "tauri_helper_macros"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2226ac02ed13d17106a33a5b8b6c4cf9855b8a00cdd74e7669cab51057b56fd3"
+version = "0.1.2"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
