@@ -31,25 +31,25 @@ This workspace includes the following crates:
 
 ## Installation
 
-Add `tauri_helper` to your `Cargo.toml`:
+Add `tauri-helper` to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-tauri_helper = "0.1.1"
+tauri-helper = "0.1.4"
 ```
 
 If you want to use the `WithLogging` macro with `tracing`, enable the `tracing` feature:
 
 ```toml
 [dependencies]
-tauri_helper = { version = "0.1.1", features = ["tracing"] }
+tauri-helper = { version = "0.1.4", features = ["tracing"] }
 ```
 
 Then add it to the `[build-dependencies]` :
 
 ```toml
 [build-dependencies]
-tauri_helper = "0.1.1"
+tauri-helper = "0.1.4"
 ```
 
 ## IMPORTANT
