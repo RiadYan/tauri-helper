@@ -62,6 +62,20 @@ Before using any command collection, you have to add this to the `build.rs` file
         tauri_build::build();
     }
 ```
+
+And then be sure your workspace is correct and has the current crate defined in your `Cargo.toml` such as this :
+
+```toml
+    [workspace]
+    members = [
+        ".",
+        "local-crates/some-commands1",
+        "local-crates/some-commands2",
+        "local-crates/some-commands3",
+    ]
+```
+> Don't forget to add `.` as a member or else the crate will not be able to get the commands from the default crate.
+
 ---
 
 ## Usage
