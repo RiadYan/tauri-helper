@@ -200,6 +200,13 @@ Contributions are welcome! Please open an issue or submit a pull request if you 
 
 ---
 
+## TODO
+
+- `All-In-One` : A macro that collects a command and automatically adds `#[tauri::command]`.
+- `All-In-One` - Specta : Same thing as `All-In-One` but also adding the `#[specta::specta]` macro.
+
+---
+
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
