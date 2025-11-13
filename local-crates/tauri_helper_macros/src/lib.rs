@@ -10,6 +10,7 @@ use std::{
 #[cfg(feature = "tracing")]
 use syn::{Data, DeriveInput, Fields};
 use syn::{ItemFn, LitBool, parse_macro_input};
+
 use tauri_helper_core::{find_workspace_dir, get_workspace_pkg_name};
 
 #[cfg(feature = "tracing")]
@@ -274,15 +275,11 @@ pub fn tauri_collect_commands(_item: TokenStream) -> TokenStream {
     let expanded = quote! {{
         #[allow(non_snake_case, dead_code, unused_imports)]
         mod __tauri_helper_generated {
-            // Generic over the runtime R so this works with any Builder<R>
-            pub fn __tauri_collected_handler<R: tauri::Runtime>()
-                -> impl Fn(tauri::ipc::Invoke<R>) -> bool + Send + Sync + 'static
-            {
+            pub fn __tauri_collected_handler() -> tauri::ipc::InvokeHandler<tauri::Wry> {
                 tauri::generate_handler![ #(#collected_paths),* ]
             }
         }
 
-        // type parameter R will be inferred from the surrounding Builder<R>
         __tauri_helper_generated::__tauri_collected_handler()
     }};
 

@@ -13,6 +13,9 @@ description = "The list of macros of the tauri_helper crate"
 [lib]
 proc-macro = true
 
+[dev-dependencies]
+trybuild = "1.0.114"
+
 [dependencies]
 tracing = { version = "0.1.41", optional = true }
 thiserror = "2.0.12"
