@@ -8,12 +8,11 @@ use types::CargoToml;
 pub fn find_workspace_dir(start_dir: &Path) -> PathBuf {
     let mut current_dir = start_dir.to_path_buf();
     loop {
-        if current_dir.join("Cargo.toml").exists() {
-            if let Ok(contents) = fs::read_to_string(current_dir.join("Cargo.toml")) {
-                if contents.contains("[workspace]") {
-                    return current_dir;
-                }
-            }
+        if current_dir.join("Cargo.toml").exists()
+            && let Ok(contents) = fs::read_to_string(current_dir.join("Cargo.toml"))
+            && contents.contains("[workspace]")
+        {
+            return current_dir;
         }
         if !current_dir.pop() {
             panic!("Workspace root not found from {}", start_dir.display());

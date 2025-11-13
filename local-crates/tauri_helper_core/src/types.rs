@@ -57,6 +57,8 @@ pub struct TauriHelperOptions {
     /// want to automatically collect all `#[tauri::command]` functions without explicit
     /// opt-in. Use this option with caution.
     pub collect_all: bool,
+    /// Members of the workspace to scan, if `None` it will just scan every member
+    pub members: Option<Vec<String>>,
 }
 
 #[allow(clippy::derivable_impls)]
@@ -69,12 +71,18 @@ impl Default for TauriHelperOptions {
     /// This default behavior is recommended for most use cases to ensure explicit control
     /// over which commands are included in your Tauri application.
     fn default() -> Self {
-        Self { collect_all: false }
+        Self {
+            collect_all: false,
+            members: None,
+        }
     }
 }
 
 impl TauriHelperOptions {
-    pub fn new(collect_all: bool) -> Self {
-        Self { collect_all }
+    pub fn new(collect_all: bool, members: Option<Vec<String>>) -> Self {
+        Self {
+            collect_all,
+            members,
+        }
     }
 }
