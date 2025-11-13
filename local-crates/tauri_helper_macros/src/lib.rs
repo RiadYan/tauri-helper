@@ -222,36 +222,18 @@ pub fn specta_collect_commands(_item: TokenStream) -> TokenStream {
         eprintln!(
             "Warning: No commands were collected. Ensure functions are annotated with `#[auto_collect_command]`."
         );
-        return quote! {{
-            #[allow(non_snake_case, dead_code, unused_imports)]
-            mod __tauri_specta_generated {
-                pub fn __specta_collected_handler() -> impl ::specta::CollectCommands {
-                    tauri_specta::collect_commands![]
-                }
-            }
-
-            __tauri_specta_generated::__specta_collected_handler()
-        }}
-        .into();
+        return quote! { tauri_specta::collect_commands![] }.into();
     }
 
-    let collected_paths = commands
-        .iter()
-        .map(|fn_name| syn::parse_str::<syn::Path>(fn_name).unwrap())
-        .collect::<Vec<_>>();
+    let collected = commands.iter().map(|fn_name| {
+        let path = syn::parse_str::<syn::Path>(fn_name).unwrap();
+        quote!(#path)
+    });
 
-    let expanded = quote! {{
-        #[allow(non_snake_case, dead_code, unused_imports)]
-        mod __tauri_specta_generated {
-            pub fn __specta_collected_handler() -> impl ::specta::CollectCommands {
-                tauri_specta::collect_commands![ #(#collected_paths),* ]
-            }
-        }
-
-        __tauri_specta_generated::__specta_collected_handler()
-    }};
-
-    expanded.into()
+    quote! {
+        tauri_specta::collect_commands![ #(#collected),* ]
+    }
+    .into()
 }
 
 /// Generates the Tauri generate_handler![] macro invocation with a list of all collected commands.
@@ -267,23 +249,15 @@ pub fn tauri_collect_commands(_item: TokenStream) -> TokenStream {
         return quote! { tauri::generate_handler![] }.into();
     }
 
-    let collected_paths = commands
-        .iter()
-        .map(|fn_name| syn::parse_str::<syn::Path>(fn_name).unwrap())
-        .collect::<Vec<_>>();
+    let collected = commands.iter().map(|fn_name| {
+        let path = syn::parse_str::<syn::Path>(fn_name).unwrap();
+        quote!(#path)
+    });
 
-    let expanded = quote! {{
-        #[allow(non_snake_case, dead_code, unused_imports)]
-        mod __tauri_helper_generated {
-            pub fn __tauri_collected_handler() -> tauri::ipc::InvokeHandler<tauri::Wry> {
-                tauri::generate_handler![ #(#collected_paths),* ]
-            }
-        }
-
-        __tauri_helper_generated::__tauri_collected_handler()
-    }};
-
-    expanded.into()
+    quote! {
+        tauri::generate_handler![ #(#collected),* ]
+    }
+    .into()
 }
 
 /// Generates an array of command names
