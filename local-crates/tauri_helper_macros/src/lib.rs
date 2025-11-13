@@ -274,11 +274,15 @@ pub fn tauri_collect_commands(_item: TokenStream) -> TokenStream {
     let expanded = quote! {{
         #[allow(non_snake_case, dead_code, unused_imports)]
         mod __tauri_helper_generated {
-            pub fn __tauri_collected_handler() -> tauri::InvokeHandler {
+            // Generic over the runtime R so this works with any Builder<R>
+            pub fn __tauri_collected_handler<R: tauri::Runtime>()
+                -> impl Fn(tauri::ipc::Invoke<R>) -> bool + Send + Sync + 'static
+            {
                 tauri::generate_handler![ #(#collected_paths),* ]
             }
         }
 
+        // type parameter R will be inferred from the surrounding Builder<R>
         __tauri_helper_generated::__tauri_collected_handler()
     }};
 
