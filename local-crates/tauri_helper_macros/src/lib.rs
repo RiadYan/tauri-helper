@@ -182,12 +182,11 @@ fn collect_commands(calling_crate: String) -> HashSet<String> {
                         let mut fn_name = line.trim().to_string();
 
                         // Strip prefix ONLY if it's the calling crate
-                        if crate_name.replace("-", "_") == calling_crate.replace("-", "_") {
-                            if let Some(stripped) =
+                        if crate_name.replace("-", "_") == calling_crate.replace("-", "_")
+                            && let Some(stripped) =
                                 fn_name.strip_prefix(&format!("{}::", crate_name.replace("-", "_")))
-                            {
-                                fn_name = stripped.to_string();
-                            }
+                        {
+                            fn_name = stripped.to_string();
                         }
 
                         if fn_name
