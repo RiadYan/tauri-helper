@@ -221,18 +221,36 @@ pub fn specta_collect_commands(_item: TokenStream) -> TokenStream {
         eprintln!(
             "Warning: No commands were collected. Ensure functions are annotated with `#[auto_collect_command]`."
         );
-        return quote! { tauri_specta::collect_commands![] }.into();
+        return quote! {{
+            #[allow(non_snake_case, dead_code, unused_imports)]
+            mod __tauri_specta_generated {
+                pub fn __specta_collected_handler() -> impl ::specta::CollectCommands {
+                    tauri_specta::collect_commands![]
+                }
+            }
+
+            __tauri_specta_generated::__specta_collected_handler()
+        }}
+        .into();
     }
 
-    let collected = commands.iter().map(|fn_name| {
-        let path = syn::parse_str::<syn::Path>(fn_name).unwrap();
-        quote!(#path)
-    });
+    let collected_paths = commands
+        .iter()
+        .map(|fn_name| syn::parse_str::<syn::Path>(fn_name).unwrap())
+        .collect::<Vec<_>>();
 
-    quote! {
-        tauri_specta::collect_commands![ #(#collected),* ]
-    }
-    .into()
+    let expanded = quote! {{
+        #[allow(non_snake_case, dead_code, unused_imports)]
+        mod __tauri_specta_generated {
+            pub fn __specta_collected_handler() -> impl ::specta::CollectCommands {
+                tauri_specta::collect_commands![ #(#collected_paths),* ]
+            }
+        }
+
+        __tauri_specta_generated::__specta_collected_handler()
+    }};
+
+    expanded.into()
 }
 
 /// Generates the Tauri generate_handler![] macro invocation with a list of all collected commands.
