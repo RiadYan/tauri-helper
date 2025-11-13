@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::env;
 use std::fs::{self, File};
 use std::io::Write;
@@ -105,68 +106,86 @@ pub fn generate_command_file(options: TauriHelperOptions) {
     let commands_dir = workspace_root.join("target").join("tauri_commands_list");
     fs::create_dir_all(&commands_dir).unwrap();
 
-    // Read the workspace members from `Cargo.toml`
-    let workspace_members = get_workspace_members(&workspace_root);
+    let workspace_members = options
+        .members
+        .clone()
+        .unwrap_or_else(|| get_workspace_members(&workspace_root));
+
     for member in &workspace_members {
         println!("cargo:rerun-if-changed={}", member);
     }
 
-    for member in workspace_members {
-        let manifest_dir = workspace_root.join(&member);
+    workspace_members.par_iter().for_each(|member| {
+        let manifest_dir = workspace_root.join(member);
         let crate_name = manifest_dir
             .file_name()
             .and_then(|n| n.to_str())
-            .unwrap_or_default();
+            .unwrap_or_default()
+            .to_string();
 
+        let src_dir = manifest_dir.join("src");
         let mut functions = Vec::new();
 
-        // Scan all Rust files in the crate's src directory
-        let src_dir = manifest_dir.join("src");
-        for entry in WalkDir::new(src_dir).into_iter().filter_map(|e| e.ok()) {
-            let path = entry.path();
-            if path.extension().and_then(|e| e.to_str()) == Some("rs") {
-                if let Ok(content) = fs::read_to_string(path) {
-                    if let Ok(ast) = parse_file(&content) {
-                        for item in ast.items {
-                            if !options.collect_all {
-                                if let syn::Item::Fn(func) = item {
-                                    for attr in &func.attrs {
-                                        if attr.path().is_ident("auto_collect_command") {
-                                            functions.push(func.sig.ident.to_string());
-                                        }
-                                    }
-                                }
-                            } else if let syn::Item::Fn(func) = item {
-                                for attr in &func.attrs {
-                                    let path = &attr.path();
-                                    //find a way to make sure it comes from tauri::command
-                                    if path.is_ident("command")
-                                        || (path.segments.len() == 2
-                                            && path.segments[0].ident == "tauri"
-                                            && path.segments[1].ident == "command")
-                                    {
-                                        functions.push(func.sig.ident.to_string());
-                                    }
-                                }
+        let rs_files: Vec<_> = WalkDir::new(&src_dir)
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.path().extension().and_then(|x| x.to_str()) == Some("rs"))
+            .collect();
+
+        let file_fns: Vec<String> = rs_files
+            .par_iter()
+            .filter_map(|entry| {
+                let path = entry.path();
+                let content = fs::read_to_string(path).ok()?;
+                if !content.contains("tauri::command") && !content.contains("auto_collect_command")
+                {
+                    return None;
+                }
+
+                let ast = parse_file(&content).ok()?;
+                let mut found = Vec::new();
+
+                for item in ast.items {
+                    if let syn::Item::Fn(func) = item {
+                        if !options.collect_all {
+                            if func
+                                .attrs
+                                .iter()
+                                .any(|a| a.path().is_ident("auto_collect_command"))
+                            {
+                                found.push(func.sig.ident.to_string());
                             }
+                        } else if func.attrs.iter().any(|a| {
+                            let p = a.path();
+                            p.is_ident("command")
+                                || (p.segments.len() == 2
+                                    && p.segments[0].ident == "tauri"
+                                    && p.segments[1].ident == "command")
+                        }) {
+                            found.push(func.sig.ident.to_string());
                         }
                     }
                 }
+                Some(found)
+            })
+            .flatten()
+            .collect();
+
+        functions.extend(file_fns);
+
+        if !functions.is_empty() {
+            let package_name = get_workspace().package.name.replace('-', "_");
+            let command_file = commands_dir.join(format!("{}.txt", crate_name));
+            let mut file = File::create(&command_file).unwrap();
+
+            for func in functions {
+                let full_name = if crate_name.replace('-', "_") == "src_tauri" {
+                    format!("{}::{}", package_name, func)
+                } else {
+                    format!("{}::{}", crate_name.replace('-', "_"), func)
+                };
+                writeln!(file, "{}", full_name).unwrap();
             }
         }
-        let package_name = get_workspace().package.name.replace("-", "_");
-
-        let command_file = commands_dir.join(format!("{}.txt", crate_name));
-        let mut file = File::create(&command_file).unwrap();
-
-        for func in functions {
-            if crate_name.replace("-", "_") == "src_tauri" {
-                let full_name = format!("{}::{}", package_name, func);
-                writeln!(file, "{}", full_name).unwrap();
-            } else {
-                let full_name = format!("{}::{}", crate_name.replace("-", "_"), func);
-                writeln!(file, "{}", full_name).unwrap();
-            }
-        }
-    }
+    });
 }

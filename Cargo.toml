@@ -1,6 +1,6 @@
 [package]
 name = "tauri-helper"
-version = "0.1.4"
+version = "0.2.1"
 edition = "2024"
 authors = ["RiadYan"]
 license = "MIT"
@@ -13,11 +13,12 @@ description = "A collection of tools and utilities designed to simplify the deve
 
 [dependencies]
 walkdir = "2.5.0"
-syn = { version = "2.0.100", features = ["full"] }
-toml = "0.8.20"
+syn = { version = "2.0.110", features = ["full"] }
+toml = "0.9.8"
 serde = { version = "1.0.219", features = ["derive"] }
-tauri_helper_core = "0.1.1"
-tauri_helper_macros = "0.1.3"
+tauri_helper_core = { version = "0.2.1", path = "local-crates/tauri_helper_core" }
+tauri_helper_macros = { version = "0.1.4", path = "local-crates/tauri_helper_macros" }
+rayon = "1.11.0"
 
 [features]
 default = []
