@@ -248,15 +248,27 @@ pub fn tauri_collect_commands(_item: TokenStream) -> TokenStream {
         return quote! { tauri::generate_handler![] }.into();
     }
 
-    let collected = commands.iter().map(|fn_name| {
-        let path = syn::parse_str::<syn::Path>(fn_name).unwrap();
-        quote!(#path)
-    });
+    let collected_paths = commands
+        .iter()
+        .map(|fn_name| syn::parse_str::<syn::Path>(fn_name).unwrap())
+        .collect::<Vec<_>>();
 
-    quote! {
-        tauri::generate_handler![ #(#collected),* ]
-    }
-    .into()
+    // generate a hidden module with a function that returns the handler,then call the function. This keeps the expansion small at the call site because RA seems to panic when this happens.
+    let expanded = quote! {
+        // hidden module to reduce type-complexity visible at call-site
+        #[doc(hidden)]
+        pub mod __tauri_helper_generated {
+            // avoid name collisions and loud lints
+            #[allow(non_snake_case, dead_code, unused_imports)]
+            pub fn __tauri_collected_handler() -> tauri::InvokeHandler {
+                tauri::generate_handler![ #(#collected_paths),* ]
+            }
+        }
+
+        __tauri_helper_generated::__tauri_collected_handler()
+    };
+
+    expanded.into()
 }
 
 /// Generates an array of command names
