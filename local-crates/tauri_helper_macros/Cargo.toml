@@ -14,7 +14,7 @@ description = "The list of macros of the tauri_helper crate"
 proc-macro = true
 
 [dev-dependencies]
-trybuild = "1.0.114"
+tempfile = "3.24.0"
 
 [dependencies]
 tracing = { version = "0.1.41", optional = true }
