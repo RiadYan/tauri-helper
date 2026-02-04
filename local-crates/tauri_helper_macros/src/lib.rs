@@ -1,16 +1,17 @@
+mod collection;
+mod tests;
+
 use proc_macro::TokenStream;
-use proc_macro_error::proc_macro_error;
 use quote::quote;
-use std::path::Path;
-use std::{
-    collections::HashSet,
-    env,
-    fs::{self},
-};
+use std::env;
+
 #[cfg(feature = "tracing")]
 use syn::{Data, DeriveInput, Fields};
 use syn::{ItemFn, LitBool, parse_macro_input};
-use tauri_helper_core::{find_workspace_dir, get_workspace_pkg_name};
+
+use tauri_helper_core::get_workspace_pkg_name;
+
+use crate::collection::collect_commands;
 
 #[cfg(feature = "tracing")]
 fn is_string_type(ty: &syn::Type) -> bool {
@@ -163,54 +164,6 @@ pub fn auto_collect_command(_attr: TokenStream, item: TokenStream) -> TokenStrea
     quote! { #input }.into()
 }
 
-/// Collects all Tauri commands from the workspace's command files
-fn collect_commands(calling_crate: String) -> HashSet<String> {
-    let manifest_dir = env::var("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR not set");
-    let workspace_root = find_workspace_dir(Path::new(&manifest_dir));
-    let commands_dir = workspace_root.join("target").join("tauri_commands_list");
-
-    let mut commands = HashSet::new();
-
-    if let Ok(entries) = fs::read_dir(&commands_dir) {
-        for entry in entries.flatten() {
-            let path = entry.path();
-            if path.is_file() && path.extension().and_then(|e| e.to_str()) == Some("txt") {
-                let crate_name = get_workspace_pkg_name();
-
-                if let Ok(content) = fs::read_to_string(&path) {
-                    for line in content.lines() {
-                        let mut fn_name = line.trim().to_string();
-
-                        // Strip prefix ONLY if it's the calling crate
-                        if crate_name.replace("-", "_") == calling_crate.replace("-", "_")
-                            && let Some(stripped) =
-                                fn_name.strip_prefix(&format!("{}::", crate_name.replace("-", "_")))
-                        {
-                            fn_name = stripped.to_string();
-                        }
-
-                        if fn_name
-                            .chars()
-                            .all(|c| c.is_ascii_alphanumeric() || c == '_' || c == ':')
-                        {
-                            commands.insert(fn_name);
-                        } else {
-                            panic!("Invalid function name `{}` in command file", fn_name);
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        eprintln!(
-            "Warning: No commands directory found at {}",
-            commands_dir.display()
-        );
-    }
-
-    commands
-}
-
 /// Generates the Specta collect_commands![] macro invocation with a list of all collected commands.
 #[proc_macro]
 pub fn specta_collect_commands(_item: TokenStream) -> TokenStream {
@@ -248,27 +201,15 @@ pub fn tauri_collect_commands(_item: TokenStream) -> TokenStream {
         return quote! { tauri::generate_handler![] }.into();
     }
 
-    let collected_paths = commands
-        .iter()
-        .map(|fn_name| syn::parse_str::<syn::Path>(fn_name).unwrap())
-        .collect::<Vec<_>>();
+    let collected = commands.iter().map(|fn_name| {
+        let path = syn::parse_str::<syn::Path>(fn_name).unwrap();
+        quote!(#path)
+    });
 
-    // generate a hidden module with a function that returns the handler,then call the function. This keeps the expansion small at the call site because RA seems to panic when this happens.
-    let expanded = quote! {
-        // hidden module to reduce type-complexity visible at call-site
-        #[doc(hidden)]
-        pub mod __tauri_helper_generated {
-            // avoid name collisions and loud lints
-            #[allow(non_snake_case, dead_code, unused_imports)]
-            pub fn __tauri_collected_handler() -> tauri::InvokeHandler {
-                tauri::generate_handler![ #(#collected_paths),* ]
-            }
-        }
-
-        __tauri_helper_generated::__tauri_collected_handler()
-    };
-
-    expanded.into()
+    quote! {
+        tauri::generate_handler![ #(#collected),* ]
+    }
+    .into()
 }
 
 /// Generates an array of command names
